@@ -1,0 +1,87 @@
+<section class="min-h-screen h-screen w-full bg-grayLight flex items-center justify-center px-4">
+    <div class="w-full max-w-7xl md:grid md:grid-cols-2 bg-white rounded-[40px] overflow-hidden shadow-xl">
+
+        <!-- BLOCO VISUAL (Esquerda) -->
+        <div class="hidden md:flex flex-col justify-between bg-primary text-white p-10 relative m-2 rounded-[40px]">
+
+            <!-- Ícone ou imagem decorativa -->
+            <div class="flex justify-center items-center h-full">
+                <img src="assets/EventAnexusLogo.jpg" alt="Event Anexus"
+                    class="w-full h-full opacity-80 rounded-[40px]" />
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO (Direita) -->
+        <div class="p-6 md:p-10 flex flex-col justify-center items-center w-full text-secondary">
+            <h1 class="text-3xl md:text-4xl xl:text-5xl font-bold mb-6 text-center">
+                Event Anexus
+            </h1>
+
+            <h3 class="text-lg md:text-xl font-semibold text-center mb-6">
+                Seja Bem-Vindo ao Event Anexus!
+            </h3>
+
+            <!-- Inputs -->
+            <div class="flex flex-col gap-4 w-full">
+                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="email">
+                    Email
+                    <input
+                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+                        type="text" id="email" />
+                </label>
+
+                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="password">
+                    Senha
+                    <input
+                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+                        type="password" id="password" />
+                </label>
+            </div>
+
+            <!-- Lembrar -->
+            <div class="flex justify-between items-center mt-4 w-full text-sm md:text-base">
+                <label class="flex items-center gap-2 text-gray-500 cursor-pointer">
+                    <input type="checkbox" id="remember" />
+                    <span>Lembrar-me</span>
+                </label>
+
+                <button type="button" class="text-secondary hover:underline" (click)="navigateToEsquecerSenha()">
+                    Esqueci minha senha
+                </button>
+            </div>
+
+            <!-- Login -->
+            <div class="flex flex-col items-center mt-6 w-full gap-3">
+                <button
+                    class="bg-secondary text-white py-2 px-6 md:py-3 md:px-8 rounded-full w-full hover:bg-secondary/90 transition-all">
+                    Login
+                </button>
+
+                <!-- Botão de cadastro -->
+                <button
+                    class="border border-secondary text-secondary py-2 px-6 md:py-3 md:px-8 rounded-full w-full hover:bg-secondary hover:text-white transition-all"
+                    (click)="navigateToCadastro()">
+                    Cadastrar-se
+                </button>
+
+                <span class="text-sm text-gray-500">Ou logar com</span>
+
+                <div class="flex justify-center gap-3 mt-2 w-full">
+                    <button
+                        class="bg-grayLight hover:bg-grayCool p-3 md:p-4 rounded-full transition-all flex items-center justify-center w-full">
+                        <i class="ph-fill ph-facebook-logo text-secondary text-xl md:text-2xl"></i>
+                    </button>
+                    <button
+                        class="bg-grayLight hover:bg-grayCool p-3 md:p-4 rounded-full transition-all flex items-center justify-center w-full">
+                        <i class="ph-fill ph-google-logo text-secondary text-xl md:text-2xl"></i>
+                    </button>
+                    <button
+                        class="bg-grayLight hover:bg-grayCool p-3 md:p-4 rounded-full transition-all flex items-center justify-center w-full">
+                        <i class="ph-fill ph-linkedin-logo text-secondary text-xl md:text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
