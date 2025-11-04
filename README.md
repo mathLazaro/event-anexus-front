@@ -676,11 +676,6 @@ module.exports = {
 - Documente componentes e serviços públicos
 - Use Conventional Commits
 
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ---
 
@@ -690,14 +685,3 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ---
 
-## 📞 Suporte
-
-Para suporte, envie um email para matheus.anthony@example.com ou abra uma issue no GitHub.
-
----
-
-<div align="center">
-  
-**Desenvolvido com ❤️ usando Angular 19**
-
-</div>
