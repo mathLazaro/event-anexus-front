@@ -1,0 +1,13 @@
+<div class="relative pb-8">
+    <label *ngIf="label" [for]="id" class="block text-sm font-medium mb-1">
+        {{ label }}
+    </label>
+    <input [type]="type" [id]="id" [name]="name" [placeholder]="placeholder" [value]="control.value || ''"
+        [disabled]="disabled" (input)="onInputChange($event)" (blur)="onBlurEvent()"
+        class="w-full border rounded-xl px-3 py-2 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        [class.border-red-500]="control.invalid && control.touched" />
+    <span *ngIf="control.invalid && control.touched"
+        class="absolute left-0 z-10 text-red-500 text-sm top-[calc(100%-1.5rem)]">
+        {{ getErrorMessage() }}
+    </span>
+</div>

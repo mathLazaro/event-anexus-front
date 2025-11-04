@@ -1,0 +1,54 @@
+<aside [class.w-72]="isSidebarOpen" [class.w-32]="!isSidebarOpen"
+    class="h-screen sticky top-0 bg-gradient-to-b from-primary to-secondary text-white transition-all duration-300 ease-in-out shadow-2xl flex flex-col">
+
+    <!-- Header da Sidebar -->
+    <div class="p-4 flex items-center justify-center border-b border-white/10 gap-2">
+        <div class="flex items-center space-x-2">
+            <div class="rounded-xl bg-white w-12 h-12 flex justify-center items-center">
+                <img src="assets/EventAnexusSimpleLogo.jpg" alt="Logo do EventAnexus" class="w-10 h-10 flex-shrink-0">
+
+            </div>
+            <h1 *ngIf="isSidebarOpen" class="text-2xl font-bold tracking-wide">
+                Event<span class="text-grayCool">Anexus</span>
+            </h1>
+        </div>
+        <button (click)="toggleSidebar()"
+            class="p-2 hover:bg-secondary/50 rounded-lg transition-colors duration-200 flex-shrink-0">
+            <i *ngIf="isSidebarOpen" class="ph-bold ph-caret-double-left text-xl"></i>
+            <i *ngIf="!isSidebarOpen" class="ph-bold ph-caret-double-right text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="p-4 space-y-2 flex-1">
+        <a *ngFor="let item of menuItems" [routerLink]="item.route" routerLinkActive="bg-secondary/70 shadow-lg"
+            [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-secondary/50 transition-all duration-200 group"
+            [ngClass]="{'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
+            <i [class]="'ph-bold ' + item.icon + ' text-2xl group-hover:scale-110 transition-transform'"></i>
+            <span *ngIf="isSidebarOpen" class="font-medium">
+                {{ item.label }}
+            </span>
+        </a>
+    </nav>
+
+    <!-- User Section -->
+    <div class="p-4 border-t border-white/10">
+        <button (click)="navigateToProfile()"
+            class="w-full flex items-center space-x-3 mb-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors duration-200">
+            <div class="w-10 h-10 bg-grayCool rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="ph-bold ph-user text-2xl text-primary"></i>
+            </div>
+            <div *ngIf="isSidebarOpen" class="flex-1 min-w-0 text-left">
+                <p class="text-sm font-medium truncate">{{ userEmail }}</p>
+                <p class="text-xs text-grayCool">Ver perfil</p>
+            </div>
+        </button>
+
+        <button (click)="logout()"
+            class="w-full flex items-center justify-center space-x-2 p-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200">
+            <i class="ph-bold ph-sign-out text-xl"></i>
+            <span *ngIf="isSidebarOpen">Sair</span>
+        </button>
+    </div>
+</aside>

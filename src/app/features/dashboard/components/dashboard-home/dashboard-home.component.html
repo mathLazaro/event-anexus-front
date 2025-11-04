@@ -1,0 +1,65 @@
+<div class="space-y-6">
+    <!-- Welcome Section -->
+    <div class="bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg p-8 text-white">
+        <h1 class="text-3xl font-bold mb-2">Bem-vindo ao EventAnexus! 🎉</h1>
+        <p class="text-grayCool">Gerencie seus eventos de forma simples e eficiente</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let stat of stats"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-grayLight">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-secondary text-sm font-medium">{{ stat.title }}</p>
+                    <p class="text-3xl font-bold text-primary mt-2">{{ stat.value }}</p>
+                </div>
+                <div [class]="stat.color + ' w-12 h-12 rounded-lg flex items-center justify-center'">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="stat.icon" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-md p-6 border border-grayLight">
+        <h2 class="text-xl font-semibold text-primary mb-4">Ações Rápidas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+                class="p-4 border-2 border-dashed border-grayCool rounded-lg hover:border-primary hover:bg-grayLight transition-all duration-200 flex flex-col items-center justify-center space-y-2 group">
+                <svg class="w-8 h-8 text-grayCool group-hover:text-primary" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="text-secondary group-hover:text-primary font-medium">Criar Evento</span>
+            </button>
+
+            <button
+                class="p-4 border-2 border-dashed border-grayCool rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200 flex flex-col items-center justify-center space-y-2 group">
+                <svg class="w-8 h-8 text-grayCool group-hover:text-green-600" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span class="text-secondary group-hover:text-green-600 font-medium">Adicionar Participante</span>
+            </button>
+
+
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-md p-6 border border-grayLight">
+        <h2 class="text-xl font-semibold text-primary mb-4">Atividades Recentes</h2>
+        <div class="text-center py-12">
+            <svg class="w-16 h-16 text-grayCool mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p class="text-secondary">Nenhuma atividade recente</p>
+            <p class="text-grayCool text-sm mt-2">Comece criando seu primeiro evento!</p>
+        </div>
+    </div>
+</div>

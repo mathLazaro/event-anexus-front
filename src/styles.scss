@@ -5,3 +5,69 @@
 body {
   overflow-x: hidden;
 }
+
+/* ===== CDK Dialog / Modal Styles ===== */
+
+/* Container overlay */
+.cdk-overlay-container {
+  z-index: 1000;
+
+}
+
+/* Wrapper global para centralizar o modal */
+.cdk-global-overlay-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Backdrop escuro com blur */
+.custom-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+
+/* Container do modal */
+.custom-dialog-container {
+  background: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  pointer-events: auto;
+  animation: modalFadeInScale 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animação de entrada do modal */
+@keyframes modalFadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Animação de saída do modal */
+.cdk-overlay-pane.ng-animating {
+  animation: modalFadeOutScale 0.15s cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes modalFadeOutScale {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+}

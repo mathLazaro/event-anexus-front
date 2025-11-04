@@ -1,0 +1,146 @@
+<div class="max-w-4xl mx-auto">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingUser" class="flex items-center justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoadingUser && currentUser" class="space-y-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 border border-grayLight">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-primary">Editar Perfil</h1>
+                    <p class="text-secondary mt-1">Gerencie suas informações pessoais</p>
+                </div>
+                <app-button text="Excluir Conta" type="button" buttonType="danger" icon="trash" [fullWidth]="false"
+                    (btnClick)="onDeleteUser()" />
+            </div>
+        </div>
+
+        <!-- User Data Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 border border-grayLight">
+            <h2 class="text-xl font-semibold text-primary mb-6">Informações Pessoais</h2>
+
+            <form [formGroup]="userForm" (ngSubmit)="onSubmitUser()" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Nome -->
+                    <app-input label="Nome Completo *" placeholder="Digite seu nome completo" type="text" id="name"
+                        name="name" [control]="userForm.get('name')!" [errorMessages]="{
+                            required: 'Nome é obrigatório',
+                            minlength: 'Nome deve ter no mínimo 3 caracteres'
+                        }" />
+
+                    <!-- Email (desabilitado) -->
+                    <div class="relative pb-8">
+                        <label for="email" class="block text-sm font-medium text-secondary mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input id="email" type="email" formControlName="email"
+                                class="w-full px-4 py-2 border border-grayCool rounded-lg bg-grayLight cursor-not-allowed"
+                                placeholder="seu@email.com">
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                                <svg class="w-5 h-5 text-grayCool" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="absolute left-0 z-10 text-secondary text-sm top-[calc(70%)] mt-1">
+                            O email não pode ser alterado
+                        </p>
+                    </div>
+
+                    <!-- Telefone -->
+                    <app-input label="Telefone *" placeholder="(00) 00000-0000" type="tel" id="telephone_number"
+                        name="telephone_number" [control]="userForm.get('telephone_number')!" mask="phone"
+                        [errorMessages]="{
+                            required: 'Telefone é obrigatório',
+                            pattern: 'Formato inválido: (00) 00000-0000'
+                        }" />
+
+                    <!-- Tipo de Usuário -->
+                    <div class="relative pb-8">
+                        <label for="type" class="block text-sm font-medium text-secondary mb-2">
+                            Tipo de Usuário <span class="text-red-500">*</span>
+                        </label>
+                        <select id="type" formControlName="type"
+                            class="w-full px-4 py-2 border border-grayCool rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                            <option *ngFor="let type of userTypes" [value]="type.value">
+                                {{ type.label }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Departamento -->
+                    <div class="md:col-span-2">
+                        <app-input label="Departamento (opcional)" placeholder="Ex: TI, RH, Vendas" type="text"
+                            id="department" name="department" [control]="userForm.get('department')!" />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end">
+                    <app-button text="Salvar Alterações" type="submit" buttonType="primary" icon="check"
+                        [loading]="isSubmittingUser" loadingText="Salvando..." [disabled]="userForm.invalid"
+                        [fullWidth]="false" />
+                </div>
+            </form>
+        </div>
+
+        <!-- Password Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 border border-grayLight">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-primary">Alterar Senha</h2>
+                    <p class="text-secondary text-sm mt-1">Para alterar sua senha, você precisa informar a senha atual
+                    </p>
+                </div>
+                <button (click)="togglePasswordSection()"
+                    class="px-4 py-2 bg-grayLight hover:bg-grayCool text-secondary rounded-lg transition-colors duration-200">
+                    {{ showPasswordSection ? 'Cancelar' : 'Alterar Senha' }}
+                </button>
+            </div>
+
+            <!-- Password Form -->
+            <form *ngIf="showPasswordSection" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()"
+                class="space-y-6">
+
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Senha Atual -->
+                    <app-input label="Senha Atual *" placeholder="Digite sua senha atual" type="password"
+                        id="current_password" name="current_password" [control]="passwordForm.get('current_password')!"
+                        [errorMessages]="{
+                            required: 'Senha atual é obrigatória',
+                            minlength: 'Senha deve ter no mínimo 6 caracteres'
+                        }" />
+
+                    <!-- Nova Senha -->
+                    <app-input label="Nova Senha *" placeholder="Digite sua nova senha" type="password"
+                        id="new_password" name="new_password" [control]="passwordForm.get('new_password')!"
+                        [errorMessages]="{
+                            required: 'Nova senha é obrigatória',
+                            minlength: 'Senha deve ter no mínimo 6 caracteres'
+                        }" />
+
+                    <!-- Confirmar Nova Senha -->
+                    <app-input label="Confirmar Nova Senha *" placeholder="Confirme sua nova senha" type="password"
+                        id="confirm_new_password" name="confirm_new_password"
+                        [control]="passwordForm.get('confirm_new_password')!" [errorMessages]="{
+                            required: 'Confirmação é obrigatória',
+                            passwordsMismatch: 'As senhas não coincidem'
+                        }" />
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end">
+                    <app-button text="Alterar Senha" type="submit" buttonType="secondary" icon="lock"
+                        [loading]="isSubmittingPassword" loadingText="Alterando..." [disabled]="passwordForm.invalid"
+                        [fullWidth]="false" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

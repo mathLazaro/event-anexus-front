@@ -1,78 +1,105 @@
 <section class="min-h-screen h-screen w-full bg-grayLight flex items-center justify-center px-4">
     <div class="w-full max-w-7xl md:grid md:grid-cols-2 bg-white rounded-[40px] overflow-hidden shadow-xl">
         <!-- BLOCO VISUAL (Esquerda) -->
-        <div class="hidden md:flex flex-col justify-between bg-primary text-white p-10 relative m-2 rounded-[40px]">
-            <div class="flex justify-center items-center h-full">
-                <img src="assets/EventAnexusLogo.jpg" alt="Event Anexus"
+        <aside class="hidden md:flex flex-col justify-between bg-primary text-white p-10 relative m-2 rounded-[40px]"
+            aria-hidden="false">
+            <figure class="flex justify-center items-center h-full">
+                <img src="assets/EventAnexusLogo.jpg" alt="Logo Event Anexus"
                     class="w-full h-full opacity-80 rounded-[40px]" />
-            </div>
-        </div>
+            </figure>
+        </aside>
 
         <!-- FORMULÁRIO DE CADASTRO (Direita) -->
-        <div class="p-6 md:p-10 flex flex-col justify-center items-center w-full text-secondary">
-            <h1 class="text-3xl md:text-4xl xl:text-5xl font-bold mb-6 text-center">
-                Crie sua conta
-            </h1>
+        <main class="p-6 md:p-10 flex flex-col justify-center items-center w-full text-secondary">
+            <header class="w-full text-center mb-6">
+                <h1 class="text-3xl md:text-4xl xl:text-5xl font-bold">Crie sua conta</h1>
+                <p class="text-lg md:text-xl font-semibold mt-2">Preencha os dados abaixo para se cadastrar</p>
+            </header>
 
-            <h3 class="text-lg md:text-xl font-semibold text-center mb-6">
-                Preencha os dados abaixo para se cadastrar
-            </h3>
+            <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()" class="flex flex-col  w-full max-w-3xl" novalidate>
+                <!-- Card: Dados Pessoais -->
 
-            <form class="flex flex-col gap-4 w-full">
-                <!-- Nome -->
-                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="firstName">
-                    Nome
-                    <input
-                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
-                        type="text" id="firstName" />
-                </label>
+                <h2 class="text-xl font-semibold">Dados pessoais</h2>
+                <div class="grid grid-cols-1">
+                    <app-input label="Nome" placeholder="Digite seu nome" type="text" id="firstName" name="name"
+                        [control]="cadastroForm.get('name')!" [errorMessages]="{
+                            required: 'O nome é obrigatório.',
+                            minlength: 'O nome precisa ter ao menos 2 caracteres.'
+                        }" />
 
-                <!-- Sobrenome -->
-                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="lastName">
-                    Sobrenome
-                    <input
-                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
-                        type="text" id="lastName" />
-                </label>
 
-                <!-- Email -->
-                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="email">
-                    Email
-                    <input
-                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
-                        type="email" id="email" />
-                </label>
 
-                <!-- Senha -->
-                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="password">
-                    Senha
-                    <input
-                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
-                        type="password" id="password" />
-                </label>
+                </div>
 
-                <!-- Confirmar Senha -->
-                <label class="flex flex-col text-sm md:text-base font-medium gap-1" for="confirmPassword">
-                    Confirmar Senha
-                    <input
-                        class="w-full border rounded-xl px-3 py-2 md:px-5 md:py-3 bg-grayLight focus:bg-white focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
-                        type="password" id="confirmPassword" />
-                </label>
 
-                <!-- Botão de Cadastro -->
-                <button
-                    class="bg-secondary text-white py-2 px-6 md:py-3 md:px-8 rounded-full w-full hover:bg-secondary/90 transition-all mt-4"
-                    type="submit">
-                    Cadastrar
-                </button>
+                <!-- Card: Contato -->
 
-                <!-- Redirecionamento -->
-                <p class="text-sm text-gray-500 text-center mt-2">
-                    Já tem uma conta?
-                    <a (click)="navigateToLogin()"
-                        class="text-secondary hover:underline font-medium cursor-pointer">Faça login</a>
-                </p>
+                <h2 class="text-xl font-semibold">Contato</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <app-input label="Email" placeholder="seu@email.com" type="email" id="email" name="email"
+                        [control]="cadastroForm.get('email')!" [errorMessages]="{
+                            required: 'O email é obrigatório.',
+                            email: 'Informe um email válido.'
+                        }" />
+
+                    <app-input label="Telefone" placeholder="(00) 00000-0000" type="tel" id="telephone"
+                        name="telephone_number" [control]="cadastroForm.get('telephone_number')!" mask="phone"
+                        [errorMessages]="{
+                            required: 'O telefone é obrigatório.',
+                            pattern: 'Formato inválido: (00) 00000-0000'
+                        }" />
+                </div>
+
+
+                <!-- Card: Segurança -->
+
+                <h2 class="text-xl font-semibold">Segurança</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <app-input label="Senha" placeholder="Mínimo 6 caracteres" type="password" id="password"
+                        name="password" [control]="cadastroForm.get('password')!" [errorMessages]="{
+                            required: 'A senha é obrigatória.',
+                            minlength: 'A senha precisa ter ao menos 6 caracteres.'
+                        }" />
+
+                    <app-input label="Confirmar senha" placeholder="Digite a senha novamente" type="password"
+                        id="confirmPassword" name="confirmPassword" [control]="cadastroForm.get('confirmPassword')!"
+                        [errorMessages]="{
+                            required: 'Confirme a senha.',
+                            passwordsMismatch: 'As senhas não coincidem.'
+                        }" />
+                </div>
+
+                <!-- Tipo de conta -->
+
+                <fieldset class="flex flex-col md:flex-row md:items-center md:justify-center gap-4 mb-5"
+                    role="radiogroup" aria-label="Tipo de conta">
+                    <legend class="sr-only">Tipo de conta</legend>
+                    <label class="flex items-center gap-2">
+                        <input type="radio" formControlName="type" name="type" [value]="UserType.REGULAR"
+                            class="mr-2" />
+                        Participante
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="radio" formControlName="type" name="type" [value]="UserType.ORGANIZER"
+                            class="mr-2" />
+                        Organizador
+                    </label>
+                </fieldset>
+
+                <!-- Mensagem de erro -->
+                <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg"
+                    role="alert">
+                    <span class="block sm:inline">{{ errorMessage }}</span>
+                </div>
+
+                <div class="flex w-full justify-center">
+                    <app-button text="Cadastrar" type="submit" buttonType="primary" [loading]="isSubmitting"
+                        loadingText="Cadastrando..." [fullWidth]="true" class="w-full" />
+                </div>
+
+                <p class="text-sm text-gray-500 text-center mt-2">Já tem uma conta? <a (click)="navigateToLogin()"
+                        class="text-secondary hover:underline font-medium cursor-pointer">Faça login</a></p>
             </form>
-        </div>
+        </main>
     </div>
 </section>
