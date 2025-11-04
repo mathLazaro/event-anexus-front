@@ -62,4 +62,15 @@ export class AuthService {
   createUser(userData: UserDto): Observable<any> {
     return this.httpService.post('users/', userData);
   }
+
+  requestPasswordReset(email: string): Observable<{ message: string }> {
+    return this.httpService.post<{ message: string }>('auth/reset-password', { email });
+  }
+
+  verifyResetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.httpService.post<{ message: string }>('auth/verify-reset-password', {
+      token,
+      new_password: newPassword
+    });
+  }
 }

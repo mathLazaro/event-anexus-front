@@ -25,6 +25,8 @@ export class InputComponent implements ControlValueAccessor {
     @Input() id: string = '';
     @Input() name: string = '';
     @Input() mask: 'phone' | 'none' = 'none';
+    @Input() icon?: string;
+    @Input() parentForm?: any; // Para validações cross-field
 
     private onChange: (value: any) => void = () => { };
     private onTouched: () => void = () => { };
@@ -127,10 +129,13 @@ export class InputComponent implements ControlValueAccessor {
             if (errors['passwordMismatch']) {
                 return this.errorMessages['passwordMismatch'] || 'As senhas não coincidem';
             }
+            if (errors['backend']) {
+                return errors['backend'];
+            }
         }
 
         // Check for form-level errors (like passwordsMismatch)
-        const parent = this.control.parent;
+        const parent = this.parentForm || this.control.parent;
         if (parent && parent.errors) {
             const parentErrors = parent.errors;
             if (parentErrors['passwordsMismatch'] && this.control.dirty) {

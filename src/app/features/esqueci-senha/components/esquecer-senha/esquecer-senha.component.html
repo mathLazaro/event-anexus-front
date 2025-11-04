@@ -1,26 +1,71 @@
 <section class="min-h-screen h-screen w-full bg-grayLight flex items-center justify-center px-4">
     <div
         class="w-full max-w-3xl bg-white rounded-[40px] shadow-xl p-8 md:p-10 flex flex-col items-center text-secondary">
-        <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">Esqueceu sua senha?</h1>
-        <p class="text-center text-sm md:text-base text-gray-500 mb-6">
-            Sem problemas! Informe seu e-mail e enviaremos um link para redefinir sua senha.
-        </p>
 
-        <form [formGroup]="resetForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6 w-full max-w-md">
-            <app-input label="Email" placeholder="seu@email.com" type="email" id="email" name="email"
-                [control]="resetForm.get('email')!" [errorMessages]="{
-                    required: 'E-mail é obrigatório',
-                    email: 'Digite um e-mail válido'
-                }" />
-
-            <app-button text="Enviar link de recuperação" type="submit" buttonType="primary" [loading]="isSubmitting"
-                loadingText="Enviando..." />
-
-            <p class="text-sm text-center text-gray-500">
-                Lembrou da senha?
-                <a (click)="navigateToLogin()" class="text-secondary hover:underline font-medium cursor-pointer">Voltar
-                    para login</a>
+        <!-- Etapa 1: Solicitar reset de senha -->
+        <div *ngIf="!isVerifyStep" class="w-full flex flex-col items-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">Esqueceu sua senha?</h1>
+            <p class="text-center text-sm md:text-base text-gray-500 mb-6">
+                Sem problemas! Informe seu e-mail e enviaremos um token de verificação para redefinir sua senha.
             </p>
-        </form>
+
+            <form [formGroup]="resetForm" (ngSubmit)="onSubmitReset()" class="flex flex-col gap-6 w-full max-w-md">
+                <app-input label="E-mail" placeholder="seu@email.com" type="email" icon="envelope"
+                    [control]="resetForm.get('email')!" [errorMessages]="{
+                        required: 'E-mail é obrigatório',
+                        email: 'Digite um e-mail válido'
+                    }" />
+
+                <app-button type="submit" buttonType="primary" [disabled]="resetForm.invalid" [loading]="isSubmitting"
+                    [fullWidth]="true" text="Enviar Token de recuperação">
+                </app-button>
+
+                <p class="text-sm text-center text-gray-500">
+                    Lembrou da senha?
+                    <a (click)="navigateToLogin()" class="text-secondary hover:underline font-medium cursor-pointer">
+                        Voltar para login
+                    </a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Etapa 2: Redefinir senha com token -->
+        <div *ngIf="isVerifyStep" class="w-full flex flex-col items-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">Redefinir senha</h1>
+            <p class="text-center text-sm md:text-base text-gray-500 mb-6">
+                Digite o token que você recebeu por e-mail e sua nova senha.
+            </p>
+
+            <form [formGroup]="verifyForm" (ngSubmit)="onSubmitVerify()" class="flex flex-col gap-6 w-full max-w-md">
+                <app-input label="Token de verificação" placeholder="Cole o token recebido por e-mail" type="text"
+                    icon="key" [control]="verifyForm.get('token')!" [errorMessages]="{
+                        required: 'Token é obrigatório'
+                    }" />
+
+                <app-input label="Nova senha" placeholder="Digite sua nova senha" type="password" icon="lock"
+                    [control]="verifyForm.get('newPassword')!" [errorMessages]="{
+                        required: 'Senha é obrigatória',
+                        minlength: 'A senha deve ter no mínimo 6 caracteres'
+                    }" />
+
+                <app-input label="Confirmar senha" placeholder="Digite a senha novamente" type="password" icon="lock"
+                    [control]="verifyForm.get('confirmPassword')!" [parentForm]="verifyForm" [errorMessages]="{
+                        required: 'Confirme sua senha',
+                        passwordsMismatch: 'As senhas não coincidem'
+                    }" />
+
+                <app-button type="submit" buttonType="primary" [disabled]="verifyForm.invalid" [loading]="isSubmitting"
+                    [fullWidth]="true" text="Redefinir Senha">
+
+                </app-button>
+
+                <p class="text-sm text-center text-gray-500">
+                    Não recebeu o token?
+                    <a (click)="isVerifyStep = false" class="text-secondary hover:underline font-medium cursor-pointer">
+                        Solicitar novo token
+                    </a>
+                </p>
+            </form>
+        </div>
     </div>
 </section>
