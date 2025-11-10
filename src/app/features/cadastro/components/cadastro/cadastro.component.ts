@@ -60,6 +60,57 @@ export class CadastroComponent {
   onSubmit() {
     if (this.cadastroForm.invalid) {
       this.cadastroForm.markAllAsTouched();
+
+      // Coleta todos os erros para exibir no modal
+      const invalidFields: string[] = [];
+      const fieldLabels: { [key: string]: string } = {
+        name: 'Nome',
+        email: 'E-mail',
+        telephone_number: 'Telefone',
+        password: 'Senha',
+        confirmPassword: 'Confirmar senha',
+        department: 'Departamento',
+        type: 'Tipo de conta'
+      };
+
+      Object.keys(this.cadastroForm.controls).forEach(key => {
+        const control = this.cadastroForm.get(key);
+        if (control?.invalid && control.errors) {
+          const fieldLabel = fieldLabels[key] || key;
+
+          // Identifica o tipo de erro
+          if (control.errors['required']) {
+            invalidFields.push(`${fieldLabel}: campo obrigatório`);
+          } else if (control.errors['email']) {
+            invalidFields.push(`${fieldLabel}: formato de e-mail inválido`);
+          } else if (control.errors['minlength']) {
+            const minLength = control.errors['minlength'].requiredLength;
+            invalidFields.push(`${fieldLabel}: mínimo de ${minLength} caracteres`);
+          } else if (control.errors['pattern']) {
+            invalidFields.push(`${fieldLabel}: formato inválido`);
+          } else {
+            invalidFields.push(`${fieldLabel}: valor inválido`);
+          }
+        }
+      });
+
+      // Verifica erros do form-level (como passwordsMismatch)
+      if (this.cadastroForm.errors) {
+        if (this.cadastroForm.errors['passwordsMismatch']) {
+          invalidFields.push('As senhas não coincidem');
+        }
+      }
+
+      // Exibe modal com os erros
+      const errorMessage = invalidFields.length > 0
+        ? invalidFields.join('\n')
+        : 'Por favor, preencha todos os campos obrigatórios corretamente.';
+
+      this.modalService.error(
+        'Formulário incompleto',
+        errorMessage
+      ).subscribe();
+
       return;
     }
 

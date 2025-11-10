@@ -1,6 +1,7 @@
 import {
   Component,
-  HostBinding
+  ChangeDetectorRef,
+  AfterViewInit
 } from '@angular/core';
 import {
   RouterOutlet
@@ -48,13 +49,24 @@ import {
     ])
   ],
   template: `
-    <main [@routeAnimations]="getRouteAnimationData(outlet)">
-      <router-outlet #outlet="outlet"></router-outlet>
+    <main [@routeAnimations]="animationState">
+      <router-outlet #outlet="outlet" (activate)="onActivate(outlet)"></router-outlet>
     </main>
   `,
 })
-export class AuthShellComponent {
-  getRouteAnimationData(outlet: RouterOutlet) {
-    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
+export class AuthShellComponent implements AfterViewInit {
+  animationState: string | undefined;
+
+  constructor(private cdr: ChangeDetectorRef) { }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+
+  onActivate(outlet: RouterOutlet) {
+    // Usa setTimeout para evitar ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      this.animationState = outlet?.activatedRouteData?.['animation'];
+    });
   }
 }
