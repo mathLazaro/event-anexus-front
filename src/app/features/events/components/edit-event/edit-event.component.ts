@@ -1,7 +1,7 @@
-import { Component, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService } from '../../../../core/services/events.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { InputComponent } from '../../../../shared/components/input/input.component';
@@ -10,11 +10,13 @@ import { SelectComponent, SelectOption } from '../../../../shared/components/sel
 import { TextareaComponent } from '../../../../shared/components/textarea/textarea.component';
 import { NumberInputComponent } from '../../../../shared/components/number-input/number-input.component';
 import { extractFieldErrors, formatErrorForModal } from '../../../../shared/utils/error-handler';
-import { CreateEventDto } from '../../../../core/dto/event.dto';
-import { convertEventTypeToBackend } from '../../../../shared/utils/event-type-mapper';
+import { UpdateEventDto, EventDto } from '../../../../core/dto/event.dto';
+import { convertEventTypeToBackend, convertEventTypeFromBackend } from '../../../../shared/utils/event-type-mapper';
+import { BrowserOnlyComponent } from '../../../../core/base/browser-only.component';
+import { takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'app-create-event',
+    selector: 'app-edit-event',
     standalone: true,
     imports: [
         CommonModule,
@@ -26,13 +28,15 @@ import { convertEventTypeToBackend } from '../../../../shared/utils/event-type-m
         TextareaComponent,
         NumberInputComponent
     ],
-    templateUrl: './create-event.component.html',
-    styleUrl: './create-event.component.scss'
+    templateUrl: './edit-event.component.html',
+    styleUrl: './edit-event.component.scss'
 })
-export class CreateEventComponent {
+export class EditEventComponent extends BrowserOnlyComponent implements OnInit {
     eventForm: FormGroup;
     isSubmitting = false;
+    isLoading = true;
     unlimitedCapacity = false;
+    eventId!: number;
 
     eventTypeOptions: SelectOption[] = [
         { value: 'Workshop', label: 'Workshop' },
@@ -49,9 +53,11 @@ export class CreateEventComponent {
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        private route: ActivatedRoute,
         private eventsService: EventsService,
         private modalService: ModalService
     ) {
+        super(); // Chama construtor da classe base
         this.eventForm = this.fb.group({
             title: ['', [Validators.required, Validators.maxLength(100)]],
             description: ['', Validators.maxLength(500)],
@@ -65,6 +71,68 @@ export class CreateEventComponent {
         });
     }
 
+    protected override onBrowserInit(): void {
+        // Executado apenas no navegador - substitui ngOnInit
+        const id = this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.eventId = parseInt(id, 10);
+            this.loadEvent();
+        } else {
+            this.isLoading = false;
+            this.modalService.error('Erro', 'ID do evento não encontrado').subscribe();
+            this.router.navigate(['/dashboard/eventos']);
+        }
+    }
+
+    loadEvent(): void {
+        this.isLoading = true;
+        this.eventsService.getEventById(this.eventId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (event) => {
+                    this.populateForm(event);
+                    this.isLoading = false;
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.modalService.error(
+                        'Erro ao carregar evento',
+                        'Não foi possível carregar os dados do evento. Tente novamente.'
+                    ).subscribe(() => {
+                        this.router.navigate(['/dashboard/eventos']);
+                    });
+                }
+            });
+    }
+
+    populateForm(event: EventDto): void {
+        // Converte data ISO para DD/MM/YYYY
+        const dateFormatted = this.convertISOToDate(event.date);
+
+        // Converte tipo de inglês (backend) para português (UI)
+        const typeFormatted = convertEventTypeFromBackend(event.type);
+
+        // Verifica se é capacidade ilimitada
+        this.unlimitedCapacity = event.capacity === null || event.capacity === 0;
+
+        this.eventForm.patchValue({
+            title: event.title,
+            description: event.description,
+            date: dateFormatted,
+            time: event.time,
+            location: event.location,
+            capacity: event.capacity,
+            type: typeFormatted,
+            speaker: event.speaker,
+            responsible: event.institution_organizer
+        });
+
+        // Desabilita o campo de capacidade se for ilimitado
+        if (this.unlimitedCapacity) {
+            this.eventForm.get('capacity')?.disable();
+        }
+    }
+
     toggleUnlimitedCapacity(): void {
         this.unlimitedCapacity = !this.unlimitedCapacity;
 
@@ -76,7 +144,6 @@ export class CreateEventComponent {
         }
     }
 
-    // Validador customizado para data futura
     futureDateValidator(control: AbstractControl): ValidationErrors | null {
         if (!control.value) {
             return null;
@@ -86,11 +153,10 @@ export class CreateEventComponent {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Converte DD/MM/YYYY para Date
         const parts = inputDate.split('/');
         if (parts.length === 3) {
             const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1; // Mês começa em 0
+            const month = parseInt(parts[1], 10) - 1;
             const year = parseInt(parts[2], 10);
             const selectedDate = new Date(year, month, day);
 
@@ -102,7 +168,6 @@ export class CreateEventComponent {
         return null;
     }
 
-    // Validador para formato HH:MM
     timeFormatValidator(control: AbstractControl): ValidationErrors | null {
         if (!control.value) {
             return null;
@@ -116,11 +181,10 @@ export class CreateEventComponent {
         return null;
     }
 
-    onSubmit() {
+    onSubmit(): void {
         if (this.eventForm.invalid) {
             this.eventForm.markAllAsTouched();
 
-            // Coleta erros para exibir
             const invalidFields: string[] = [];
             const fieldLabels: { [key: string]: string } = {
                 title: 'Título',
@@ -160,14 +224,12 @@ export class CreateEventComponent {
         this.isSubmitting = true;
 
         const formValue = this.eventForm.getRawValue();
-
-        // Converte data DD/MM/YYYY para ISO format YYYY-MM-DDTHH:mm:ss
         const dateISO = this.convertDateToISO(formValue.date);
 
         // Converte o tipo de português para inglês usando o utilitário
         const typeInEnglish = convertEventTypeToBackend(formValue.type);
 
-        const eventData: CreateEventDto = {
+        const eventData: UpdateEventDto = {
             title: formValue.title,
             description: formValue.description || '',
             date: dateISO,
@@ -179,23 +241,20 @@ export class CreateEventComponent {
             institution_organizer: formValue.responsible
         };
 
-        this.eventsService.createEvent(eventData).subscribe({
+        this.eventsService.updateEvent(this.eventId, eventData).subscribe({
             next: (response) => {
                 this.isSubmitting = false;
                 this.modalService.success(
-                    'Evento criado!',
-                    response.message || 'O evento foi cadastrado com sucesso e está visível para inscrições.'
+                    'Evento atualizado!',
+                    response.message || 'O evento foi atualizado com sucesso.'
                 ).subscribe(() => {
-                    this.router.navigate(['/dashboard']);
+                    this.router.navigate(['/dashboard/eventos']);
                 });
             },
             error: (error) => {
                 this.isSubmitting = false;
 
-                // Extrai erros específicos de campos
                 const fieldErrors = extractFieldErrors(error);
-
-                // Aplica erros aos campos correspondentes
                 Object.keys(fieldErrors).forEach(field => {
                     const control = this.eventForm.get(field);
                     if (control) {
@@ -204,19 +263,17 @@ export class CreateEventComponent {
                     }
                 });
 
-                // Formata e exibe modal de erro
                 const { title, message } = formatErrorForModal(error);
                 this.modalService.error(title, message).subscribe();
             }
         });
     }
 
-    cancel() {
-        this.router.navigate(['/dashboard']);
+    cancel(): void {
+        this.router.navigate(['/dashboard/eventos']);
     }
 
-    // Máscara para data (DD/MM/YYYY)
-    applyDateMask(event: Event) {
+    applyDateMask(event: Event): void {
         const input = event.target as HTMLInputElement;
         let value = input.value.replace(/\D/g, '');
 
@@ -231,8 +288,7 @@ export class CreateEventComponent {
         this.eventForm.get('date')?.setValue(value);
     }
 
-    // Máscara para horário (HH:MM)
-    applyTimeMask(event: Event) {
+    applyTimeMask(event: Event): void {
         const input = event.target as HTMLInputElement;
         let value = input.value.replace(/\D/g, '');
 
@@ -244,7 +300,6 @@ export class CreateEventComponent {
         this.eventForm.get('time')?.setValue(value);
     }
 
-    // Converte data DD/MM/YYYY para ISO format YYYY-MM-DDTHH:mm:ss
     private convertDateToISO(dateStr: string): string {
         const parts = dateStr.split('/');
         if (parts.length === 3) {
@@ -254,5 +309,13 @@ export class CreateEventComponent {
             return `${year}-${month}-${day}T00:00:00`;
         }
         return dateStr;
+    }
+
+    private convertISOToDate(isoDate: string): string {
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
 }

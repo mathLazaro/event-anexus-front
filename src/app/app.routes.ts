@@ -11,6 +11,8 @@ import { DashboardHomeComponent } from './features/dashboard/components/dashboar
 import { ParticipantDashboardComponent } from './features/participant-dashboard/components/participant-dashboard/participant-dashboard.component';
 import { EditUserComponent } from './features/usuarios/components/edit-user/edit-user.component';
 import { CreateEventComponent } from './features/events/components/create-event/create-event.component';
+import { ListEventsComponent } from './features/events/components/list-events/list-events.component';
+import { EditEventComponent } from './features/events/components/edit-event/edit-event.component';
 
 export const routes: Routes = [
     // Rotas protegidas - Dashboard Administrador (ORGANIZER)
@@ -22,8 +24,9 @@ export const routes: Routes = [
         children: [
             { path: '', component: DashboardHomeComponent },
             { path: 'perfil/:id', component: EditUserComponent },
+            { path: 'eventos', component: ListEventsComponent },
             { path: 'eventos/novo', component: CreateEventComponent },
-            { path: 'eventos', component: DashboardHomeComponent }, // Placeholder - lista de eventos
+            { path: 'eventos/editar/:id', component: EditEventComponent },
             { path: 'participantes', component: DashboardHomeComponent } // Placeholder
         ]
     },

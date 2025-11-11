@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EventDto, CreateEventDto } from '../dto/event.dto';
+import { EventDto, CreateEventDto, UpdateEventDto, EventResponseDto } from '../dto/event.dto';
 
 @Injectable({
     providedIn: 'root'
@@ -10,48 +10,28 @@ export class EventsService {
 
     constructor(private http: HttpClient) { }
 
-    // Criar novo evento (apenas ORGANIZER)
-    createEvent(event: CreateEventDto): Observable<{ message: string; event: EventDto }> {
-        return this.http.post<{ message: string; event: EventDto }>('events/', event);
-    }
-
-    // Listar todos os eventos
+    // GET /events/ - Listar eventos do usuário autenticado
     getAllEvents(): Observable<EventDto[]> {
         return this.http.get<EventDto[]>('events/');
     }
 
-    // Buscar evento por ID
-    getEventById(id: string): Observable<EventDto> {
-        return this.http.get<EventDto>(`events/${id}`);
+    // POST /events/ - Criar novo evento
+    createEvent(event: CreateEventDto): Observable<EventResponseDto> {
+        return this.http.post<EventResponseDto>('events/', event);
     }
 
-    // Atualizar evento
-    updateEvent(id: string, event: Partial<EventDto>): Observable<{ message: string; event: EventDto }> {
-        return this.http.put<{ message: string; event: EventDto }>(`events/${id}`, event);
+    // GET /events/{event_id} - Buscar evento por ID
+    getEventById(eventId: number): Observable<EventDto> {
+        return this.http.get<EventDto>(`events/${eventId}`);
     }
 
-    // Deletar evento
-    deleteEvent(id: string): Observable<{ message: string }> {
-        return this.http.delete<{ message: string }>(`events/${id}`);
+    // PUT /events/{event_id} - Atualizar evento
+    updateEvent(eventId: number, event: UpdateEventDto): Observable<EventResponseDto> {
+        return this.http.put<EventResponseDto>(`events/${eventId}`, event);
     }
 
-    // Inscrever-se em evento (REGULAR)
-    joinEvent(eventId: string): Observable<{ message: string }> {
-        return this.http.post<{ message: string }>(`events/${eventId}/join`, {});
-    }
-
-    // Cancelar inscrição em evento
-    leaveEvent(eventId: string): Observable<{ message: string }> {
-        return this.http.delete<{ message: string }>(`events/${eventId}/leave`);
-    }
-
-    // Listar eventos do usuário (como participante)
-    getMyEvents(): Observable<EventDto[]> {
-        return this.http.get<EventDto[]>('events/my-events');
-    }
-
-    // Listar eventos criados pelo organizador
-    getMyCreatedEvents(): Observable<EventDto[]> {
-        return this.http.get<EventDto[]>('events/my-created-events');
+    // DELETE /events/{event_id} - Deletar evento (retorna 204 No Content)
+    deleteEvent(eventId: number): Observable<void> {
+        return this.http.delete<void>(`events/${eventId}`);
     }
 }
